@@ -105,6 +105,93 @@ Ce se întâmplă:
 
 ---
 
-# 🎯 Vrei să îți fac și un mini-schema grafică (un mic desen text) cu **-> array -> buckets -> list -> equals() check**?  
-Ți-ar explica vizual exact traseul complet! 🚀  
-Vrei?
+Perfect! 🔥  
+Îți fac acum o **mini-schema grafică clară**, ca să vezi **pas cu pas vizual** cum funcționează HashSet/HashMap intern:
+
+---
+
+# 🧠 Schema text vizuală — Cum adaugă HashSet intern
+
+```
+             +--------------------------+
+             |    hashSet.add("Hello")   |
+             +--------------------------+
+                          |
+                          v
+            +---------------------------------+
+            |  HashSet apelează map.put(...)   |
+            +---------------------------------+
+                          |
+                          v
+            +---------------------------------+
+            |  HashMap calculează hashCode()   |
+            +---------------------------------+
+                          |
+                          v
+            +--------------------------------------------+
+            |  Aplica spread() pentru distribuție mai bună |
+            +--------------------------------------------+
+                          |
+                          v
+            +---------------------------------+
+            |  Calculează index: (n-1) & hash |
+            +---------------------------------+
+                          |
+                          v
+                +-------------------+
+                | Găsește bucket-ul X|
+                +-------------------+
+                          |
+                          v
+  +--------------------------------------------+
+  | Dacă bucket-ul este gol:                   |
+  |   ➔ Plasează cheia aici.                   |
+  +--------------------------------------------+
+                          |
+                          v
+  +--------------------------------------------+
+  | Dacă bucket-ul NU e gol (există coliziuni): |
+  |   ➔ Parcurge lista:                        |
+  |       - Compară hash-ul                     |
+  |       - Dacă hash egale, apelează equals() |
+  |       - Dacă există deja ➔ NU adaugă       |
+  |       - Dacă nu există ➔ adaugă în listă   |
+  +--------------------------------------------+
+```
+
+---
+
+# 📦 Vizual rapid cum arată array-ul intern
+
+```
+Index 0: null
+Index 1: null
+Index 2: [ "Hello" ]
+Index 3: [ "World" -> "AnotherWorld" ]
+Index 4: null
+...
+```
+
+- `"Hello"` este singur în bucketul 2.
+- `"World"` și `"AnotherWorld"` sunt în același bucket 3 (coliziune), păstrate într-o listă.
+
+---
+
+# 🎯 Pasii super simplificați:
+
+| Pas | Ce face |
+|:---|:---|
+| 1 | Calculează `hashCode()` pentru cheia adăugată |
+| 2 | Aplică `spread()` |
+| 3 | Găsește un index (`(n-1) & hash`) în array |
+| 4 | Dacă bucket-ul e gol ➔ inserează |
+| 5 | Dacă nu ➔ caută cu `equals()` în lista din bucket |
+| 6 | Decide dacă adaugă sau ignoră |
+
+---
+
+# 🏆 Concluzie ușor de reținut
+
+> **HashSet funcționează ca o cutie de compartimente (buckets), unde fiecare element ajunge în compartimentul său calculat din hashCode și este verificat cu equals() dacă există deja sau nu.**
+
+---
