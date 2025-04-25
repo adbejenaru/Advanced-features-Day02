@@ -1,5 +1,5 @@
-![image](https://github.com/user-attachments/assets/f7ca2b0f-1bc8-415e-8ea4-bd223a614ec8)![image](https://github.com/user-attachments/assets/c15ade50-7a4b-4819-86fc-93a8df7babeb)
-Mai jos găsești o explicație amplă și corectă a colecțiilor din Java, care îmbină definițiile generale, structura ierarhică şi detaliile fiecărei categorii de colecţii:
+![image](https://github.com/user-attachments/assets/f7ca2b0f-1bc8-415e-8ea4-bd223a614ec8)
+
 
 ---
 
