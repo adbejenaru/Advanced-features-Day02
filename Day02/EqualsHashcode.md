@@ -1,89 +1,110 @@
 ![image](https://github.com/user-attachments/assets/758f3087-87cb-4269-a38f-a60e98392626)
-Da, desigur! Imaginea ta explică **arhitectura internă a lui `HashSet`** și cum se bazează pe un `HashMap` în Java. Hai să o explic clar și logic, pas cu pas:
+Sigur! 🔥  
+Îți refac explicația **mult mai clară, logică și frumos structurată**, ca pentru cineva care chiar vrea să înțeleagă din prima privire ce arată imaginea despre **HashSet și HashMap**.
 
 ---
 
-## 🧠 Ce vrea să arate această imagine?
+# 🧠 Ce explică imaginea despre HashSet și HashMap
 
-### Că **`HashSet` folosește intern un `HashMap`** pentru a stoca valorile.
+Imaginea arată **cum funcționează intern HashSet** folosind un **HashMap** și cum sunt organizate datele în memorie.
 
 ---
 
-## 🔎 Partea din stânga imaginii: ce se întâmplă când faci
+# 🔎 Stânga imaginii – Cum adaugă HashSet elemente?
+
+1. **HashSet creează intern un HashMap**.
+2. Când faci:
 
 ```java
 Set<String> hashSet = new HashSet<>();
 hashSet.add("Hello");
 ```
+de fapt Java face:
 
-### Cum funcționează:
-1. Când tu adaugi `"Hello"` în `HashSet`, în realitate Java face asta:
-   ```java
-   map.put("Hello", DUMMY_OBJECT);
-   ```
+```java
+internalMap.put("Hello", DummyValue);
+```
 
-2. Deci în spate, `HashSet` creează un `HashMap`, iar fiecare element adăugat devine o **cheie** în acel map.
-   - Cheia este `"Hello"`
-   - Valoarea este un obiect static (intern), numit de obicei `PRESENT` (nu ne interesează)
+✅ Adică fiecare element din HashSet devine **cheia** într-un HashMap.  
+✅ **Valoarea** atașată este un obiect dummy (static, numit de obicei `PRESENT`) care **nu ne interesează**.
 
 ---
 
-## 🧮 Ce se întâmplă în `HashMap` (dreapta imaginii):
+# 🧮 Dreapta imaginii – Ce se întâmplă în HashMap când adaugi cheia?
 
-1. Se ia cheia `"Hello"`  
-2. Se calculează:
+1. Se ia cheia `"Hello"`.
+2. Se calculează `hashCode()`:
    ```java
    int hash = key.hashCode();
    ```
-3. Apoi Java aplică o funcție de dispersie (`spread()`) și apoi face:
+3. Se aplică o funcție de dispersie (`spread()`) pentru o mai bună distribuție a bitilor.
+4. Se calculează indexul array-ului intern:
    ```java
-   int index = hash % array.length; // Ex: hash % 8 = 3
+   int index = (n-1) & hash;
    ```
-4. Se determină în ce **bucket** (slot de array) se va plasa elementul. În exemplul din imagine, indexul este **3**.
+   unde `n` este dimensiunea array-ului de buckets (ex: 16, 32 etc.).
+
+5. Se plasează cheia în bucket-ul de la acel index.
 
 ---
 
-## 📦 Cum arată intern structura:
+# 📦 Cum arată intern HashMap-ul
 
-- `HashMap` folosește un **array** intern, iar fiecare poziție poate conține:
-  - Nimic (`null`)
-  - Un `Entry` (cheie + valoare)
-  - O **listă înlănțuită** de `Entry`-uri dacă există coliziuni
-  - (După Java 8, dacă sunt prea multe coliziuni, lista devine **arbore roșu-negru**)
-
----
-
-## 📈 Legătura cu `equals()` și `hashCode()`
-
-- **`hashCode()`** decide în ce bucket (index) intră cheia
-- Dacă acolo există deja alte chei → Java folosește **`equals()`** să verifice dacă este deja prezentă cheia
-- Dacă da → nu o adaugă din nou
-- Dacă nu → o adaugă în coliziune (în lista de la acel index)
+- HashMap folosește un **array de buckets** (`Node[] table`).
+- Fiecare bucket poate conține:
+  - **null** (dacă e gol),
+  - **un singur Entry** (dacă e doar o cheie),
+  - **o listă înlănțuită** (dacă există coliziuni),
+  - sau **un arbore roșu-negru** (dacă sunt multe coliziuni — din Java 8).
 
 ---
 
-## 🔁 Exemplu real:
+# 📈 Legătura între `hashCode()` și `equals()`
+
+- **`hashCode()`** decide **în ce bucket** ajunge cheia.
+- Dacă în bucket mai există alte elemente:
+  - Java folosește **`equals()`** să compare cheia nouă cu cele deja existente.
+  - Dacă găsește o cheie egală ➔ nu adaugă din nou.
+  - Dacă nu ➔ adaugă cheia nouă în lista din acel bucket.
+
+---
+
+# 🔁 Exemplu real:
 
 ```java
-hashSet.add("Hello");
-hashSet.add("Hello");
+hashSet.add("Hello"); // Adaugă "Hello"
+hashSet.add("Hello"); // Încearcă din nou
 ```
 
-- Prima dată → se face `put("Hello", DUMMY)`
+Ce se întâmplă:
+- Prima dată: se inserează în HashMap (`put("Hello", Dummy)`).
 - A doua dată:
-  - Java calculează `hashCode()` → ajunge la același index
-  - Verifică cu `equals()` dacă `"Hello"` deja există
-  - Da → nu îl mai adaugă a doua oară
+  - Se calculează același `hashCode`.
+  - Se ajunge la același index.
+  - Se compară cu `equals()`.
+  - Se vede că există deja ➔ **nu se mai adaugă**.
 
 ---
 
-## ✅ Concluzie simplă a imaginii
+# ✅ Rezumat clar al imaginii:
 
-| Element | Ce arată imaginea |
-|--------|-------------------|
-| `HashSet` | Se bazează intern pe `HashMap` |
-| `.add("Hello")` | Se transformă în `map.put("Hello", Dummy)` |
-| `HashMap` intern | Are array de buckets |
-| Coliziuni | Tratează mai multe elemente în același bucket prin liste înlănțuite |
-| `hashCode()` | Decide indexul (bucket-ul) |
-| `equals()` | Decide dacă elementul există deja în bucket |
+| Concept | Ce arată imaginea |
+|:---|:---|
+| HashSet | Intern folosește HashMap |
+| `add("Hello")` | De fapt face `put("Hello", DummyValue)` |
+| HashMap intern | Are un array de buckets |
+| Coliziuni | Bucket-ul poate conține mai multe chei (listă sau arbore) |
+| `hashCode()` | Decide în ce bucket intră cheia |
+| `equals()` | Decide dacă cheia există deja în acel bucket |
+
+---
+
+# 🏆 Pe scurt (într-o frază)
+
+> **HashSet folosește HashMap intern pentru a stoca cheile, plasându-le în bucketuri bazate pe `hashCode()`, iar dacă mai există chei în același bucket, le compară folosind `equals()` ca să evite duplicatele.**
+
+---
+
+# 🎯 Vrei să îți fac și un mini-schema grafică (un mic desen text) cu **-> array -> buckets -> list -> equals() check**?  
+Ți-ar explica vizual exact traseul complet! 🚀  
+Vrei?
